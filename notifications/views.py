@@ -1,4 +1,5 @@
 from django.http import HttpResponse
+from django.shortcuts import render
 from django.views.generic import View
 from django.views.generic.list import ListView
 from .models import Notifications
@@ -16,16 +17,17 @@ class NotificationView(View):
 	template_name = 'notificatons_test.html'
 
 	def get(self, request, **kwargs):
-	    data = self.request
-	    json_data = self.post(data=data)
+		data = self.request.GET
+		saved_data = self.post(data=data)
 
-	    return HttpResponse(json_data,content_type='application/json')
-	    
+		return render(request, 'notification_test.html', {'data':saved_data})
+
 	
 	def post(self, **kwargs):
 
-			mp_id = kwargs.get('id')
-			topic = kwargs.get('topic')
+			get_notif = kwargs.get('data')
+			mp_id = get_notif.get('id')
+			topic = get_notif.get('topic')
 
 			notification = Notifications(mp_id = mp_id, topic = topic)
 			notification.save()	
