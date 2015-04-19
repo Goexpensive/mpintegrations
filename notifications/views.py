@@ -16,7 +16,7 @@ class NotificationView(View):
 	template_name = 'notificatons_test.html'
 
 	def get(self, request, **kwargs):
-	    data = self.get_resource_data(self.request)
+	    data = self.request
 	    json_data = self.post(data=data)
 
 	    return HttpResponse(json_data,content_type='application/json')
