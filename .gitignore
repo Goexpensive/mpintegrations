@@ -2,6 +2,10 @@
 venv
 *.pyc
 staticfiles
+requirements/dev.txt
+requirements/test.txt
+mpintegrations/settings/local.py
+mpintegrations/settings/test.py
 
 # Byte-compiled / optimized / DLL files
 __pycache__/

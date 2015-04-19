@@ -1,0 +1,8 @@
+<h1>Notification</h1>
+<ul>
+{% for notification in notifications_list %}
+    <li>{{ notification.mp_id }} - {{ notification.topic}}</li>
+{% empty %}
+    <li>No Notification yet.</li>
+{% endfor %}
+</ul>
