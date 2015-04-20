@@ -40,6 +40,7 @@ INSTALLED_APPS = (
     'libs',
     'checkout',
     'notifications',
+    'preferences',
 )
 
 MIDDLEWARE_CLASSES = (

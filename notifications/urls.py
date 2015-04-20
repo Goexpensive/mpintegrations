@@ -6,8 +6,7 @@ from .views import NotificationView,NotificationListView
 
 urlpatterns = patterns('',
 
-    url(r'^notification/test/$', NotificationView.as_view(), name='notification_test'),
-    url(r'^notification/list/$', NotificationListView.as_view(), name='notification_list'),
+	url(r'^notification/test/$', csrf_exempt(NotificationView.as_view()), name='notification_test'),
+	url(r'^notification/list/$', NotificationListView.as_view(), name='notification_list'),
 
 )
-    

@@ -1,5 +1,4 @@
 from django.http import HttpResponse
-from django.views.decorators.csrf import csrf_exempt
 from django.shortcuts import render
 from django.views.generic import View
 from django.views.generic.list import ListView
@@ -12,7 +11,6 @@ class NotificationListView(ListView):
 	template_name = 'notifications_list.html'
 	context_object_name = 'notifications_list'
 
-@csrf_exempt
 class NotificationView(View):
 	model = Notifications
 	template_name = 'notificatons_test.html'
