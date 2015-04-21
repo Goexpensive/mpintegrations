@@ -1,6 +1,7 @@
 from django.views.generic.edit import CreateView, UpdateView, DeleteView
 from django.core.urlresolvers import reverse_lazy
 from django.http import HttpResponse
+from django.forms.models import model_to_dict
 from libs.mercadopago import *
 import os
 import json
@@ -9,47 +10,40 @@ from .models import Preferences
 class PreferenceCreate(CreateView):
 	model = Preferences
 	template_name = 'preference_form.html'
-	fields = ['title','quantity','unit_price','notification_url','external_reference']
+	fields = ['items_title','items_quantity','items_unit_price','notification_url','external_reference']
+	preference_fields = ["items","payer","back_urls","auto_return","payment_methods","shipments","notification_url","external_reference",
+					"expires","expiration_date_from","expiration_date_to",
+	]
 
 	def post(self, request, *args, **kwarg):
 		form = self.get_form()
 		if form.is_valid():
 			preference_model = form.save(commit=False)
-			preference = {
-				"items": [
-					{
-						"title": str(preference_model.title),
-						"quantity": int(preference_model.quantity),
-						"currency_id": "ARS", # Available currencies at: https://api.mercadopago.com/currencies
-						"unit_price": float(preference_model.unit_price)
-					}
-				]
-				#"notification_url": preference_model.notification_url
-			}
-
-			mp = MP(os.environ['MP_CLIENT_ID'], os.environ['MP_CLIENT_SECRET'])
-			preferenceResult = mp.create_preference(preference)
 			
-			sandbox_init_point = preferenceResult["response"]["sandbox_init_point"]
-			init_point = preferenceResult["response"]["init_point"]
-			
-			preference_model.sandbox_init_point = sandbox_init_point
-			preference_model.init_point = init_point
-			preference_model.save() 
-
-			#Crear metodo para la creacion de la preferencia.
-			#Crear Succes template.
-
-			return HttpResponse(preference_model,content_type='application/json')
+			preference = self.get_preference(form_list=preference_model)
+			preference = json.dumps(preference, ensure_ascii=False)
+			return HttpResponse(preference)
 		else:
 			return self.form_invalid(form)
-			
+
+	def get_preference(self,*args,**kwarg):
+		preference = dict()
+		form_list = kwarg.get('form_list')
+		form_list = model_to_dict(form_list)
+		keys = form_list.keys()
+		for field in keys:
+			for key in self.preference_fields:
+				if (key in field and key != field):
+					preference[key] =  dict()
+					preference[key][field] = form_list[field]
+		
+		return preference
 
 
 
 class PreferenceUpdate(UpdateView):
 	model = Preferences
-	fields = ['title']
+	fields = ['items_title']
 
 class PreferenceDelete(DeleteView):
 	model = Preferences
