@@ -14,22 +14,46 @@ class NotificationListView(ListView):
 class NotificationView(View):
 	model = Notifications
 	template_name = 'notificatons_test.html'
+	fields=['id','topic']
+	id = int()
+	topic = str()
 
 	def get(self, request, **kwargs):
-		data = self.request.GET
-		saved_data = self.post(data=data)
+		
+		data = self.get_data(data = self.request.GET)
+		if self.is_valid(data):
+			saved_data = self.post()
+		else:
+			saved_data = 'No hay nuevas notificaciones'
 
 		return render(request, 'notification_test.html', {'data':saved_data})
 
 	
-	def post(self, **kwargs):
+	def post(self):
 
-			get_notif = kwargs.get('data')
-			mp_id = get_notif.get('id')
-			topic = get_notif.get('topic')
+		notification = Notifications(id = self.id, topic = self.topic)
+		notification.save()	
 
-			notification = Notifications(mp_id = mp_id, topic = topic)
-			notification.save()	
+		return notification
+	def get_data(self,*args,**kwargs):
+		listnotif = kwargs.get('data')
+		data = dict()
+		for field in self.fields:
+			data[field] = listnotif.get(field)
 
-			return notification
+		return data
+
+	def is_valid(self,args):
+		i = 0
+		id = args['id']
+		topic = args['topic']
+		if ((id is not None) and (topic is not None)):
+			self.id = int(id)
+			self.topic = str(topic)
+			return True
+		else: 
+			return False	 
+
+
+
 
