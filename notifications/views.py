@@ -18,23 +18,17 @@ class NotificationView(View):
 	id = int()
 	topic = str()
 
-	def get(self, request, **kwargs):
-		
+	
+	def post(self,request, **kwargs):
 		data = self.get_data(data = self.request.GET)
 		if self.is_valid(data):
-			saved_data = self.post()
+			notification = Notifications(id = self.id, topic = self.topic)
+			notification.save()
+			return render(request, 'notification_test.html', {'data':notification})
 		else:
-			saved_data = 'No hay nuevas notificaciones'
+			notification = 'No hay nuevas notificaciones'
+			return render(request, 'notification_test.html', {'data':notification})
 
-		return render(request, 'notification_test.html', {'data':saved_data})
-
-	
-	def post(self):
-
-		notification = Notifications(id = self.id, topic = self.topic)
-		notification.save()	
-
-		return notification
 	def get_data(self,*args,**kwargs):
 		listnotif = kwargs.get('data')
 		data = dict()
