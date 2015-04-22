@@ -18,6 +18,9 @@ class NotificationView(View):
 	id = int()
 	topic = str()
 
+	def get(self,request, **kwargs):
+			notification = 'No hay nuevas notificaciones'
+			return render(request, 'notification_test.html', {'data':notification})
 	
 	def post(self,request, **kwargs):
 		data = self.get_data(data = self.request.GET)
