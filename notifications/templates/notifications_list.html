@@ -1,8 +1,28 @@
-<h1>Notification</h1>
-<ul>
-{% for notification in notifications_list %}
-    <li>{{ notification.mp_id }} - {{ notification.topic}}</li>
-{% empty %}
-    <li>No Notification yet.</li>
-{% endfor %}
-</ul>
+{% extends 'base.html' %}
+
+{% block cuerpo %}
+	<div class="jumbotron">
+		<div class="container">
+			<h1>Notification List</h1>
+		</div>
+	</div>
+
+	<div class="container">
+
+	<ul>
+	{% for notification in notifications_list %}
+	    <li>{{ notification.id }} - {{ notification.topic}}</li>
+	{% empty %}
+	    <li>No Notification yet.</li>
+	{% endfor %}
+	</ul>
+
+	<hr>
+
+	<footer>
+	  <p>&copy; Company 2014</p>
+	</footer>
+	</div> <!-- /container -->
+
+
+{% endblock %}

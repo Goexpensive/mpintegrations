@@ -1,0 +1,61 @@
+{% extends 'base.html' %}
+
+{% block cuerpo %}
+	<div class="jumbotron">
+		<div class="container">
+			<h1>Preference List</h1>
+		</div>
+	</div>
+
+	<div class="container">
+		<div class="table-responsive">
+			<table class="table">
+				<tr class="active">
+					<td> Title</th>
+			    	<th> Quantity </th>
+			    	<th> Unit_price </th>
+			    	<th> Currency_id </th>
+			    	<th> Init_point </th>
+			    	<th> Sandbox_init_point </th>
+			    	<th> Notification_url </th>
+			    	<th> External_reference </th>
+			    	<th> Email </th>
+
+				</tr>
+			{% for preference in prefence_list %}
+				<tr>
+			    	<td>{{ preference.title }}</td>
+			    	<td>{{ preference.quantity }}</td>
+			    	<td>{{ preference.unit_price }}</td>
+			    	<td>{{ preference.currency_id }}</td>
+			    	<td><a href="{{ preference.init_point }}" name="MP-Checkout" class="green-L-Rn" mp-mode="modal">Pagar</a></td>
+			    	<td><a href="{{ preference.sanbox_init_point }}" name="MP-Checkout" class="green-L-Rn" mp-mode="modal">Pagar</a></td>
+			    	<td>{{ preference.notification_url }}</td>
+			    	<td>{{ preference.external_reference }}</td>
+			    	<td>{{ preference.email }}</td>
+			    </tr>
+
+			{% empty %}
+			    <li>No Notification yet.</li>
+			{% endfor %}
+			</table>
+		</div>
+	<ul>
+	
+	</ul>
+
+	<hr>
+
+	<footer>
+	  <p>&copy; Company 2014</p>
+	</footer>
+	</div> <!-- /container -->
+	<script type="text/javascript">
+	    (function(){function $MPBR_load(){window.$MPBR_loaded !== true && (function(){var s = document.createElement("script");s.type = "text/javascript";s.async = true;
+	    s.src = ("https:"==document.location.protocol?"https://www.mercadopago.com/org-img/jsapi/mptools/buttons/":"http://mp-tools.mlstatic.com/buttons/")+"render.js";
+	    var x = document.getElementsByTagName('script')[0];x.parentNode.insertBefore(s, x);window.$MPBR_loaded = true;})();}
+	    window.$MPBR_loaded !== true ? (window.attachEvent ? window.attachEvent('onload', $MPBR_load) : window.addEventListener('load', $MPBR_load, false)) : null;})();
+	</script>
+
+
+{% endblock %}

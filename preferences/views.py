@@ -1,7 +1,8 @@
 from django.views.generic.edit import CreateView, UpdateView, DeleteView
 from django.core.urlresolvers import reverse_lazy
+from django.views.generic.list import ListView
+from django.shortcuts import redirect
 from django.http import HttpResponse
-from django.forms.models import model_to_dict
 from libs.mercadopago import *
 import os
 import json
@@ -21,9 +22,11 @@ class PreferenceCreate(CreateView):
 		if form.is_valid():
 			preference_model = form.save(commit=False)
 			
-			preference_data = self.get_preference(preference_model)
-			
-			return HttpResponse(preference_data)
+			preference_model = self.get_preference(preference_model)
+
+			preference_model.save()
+
+			return redirect('preference_list')
 		else:
 			return self.form_invalid(form)
 	
@@ -78,11 +81,12 @@ class PreferenceCreate(CreateView):
 
 		preferenceResult = mp.create_preference(preference_data)
 
-		url = preferenceResult["response"]["sandbox_init_point"]
-
+		sandbox_init_point = preferenceResult["response"]["sandbox_init_point"]
+		init_point = preferenceResult["response"]["init_point"]
+		setattr(args,'init_point',init_point)
+		setattr(args,'sandbox_init_point',sandbox_init_point)
 		
-		
-		return url
+		return args
 
 
 class PreferenceUpdate(UpdateView):
@@ -92,3 +96,10 @@ class PreferenceUpdate(UpdateView):
 class PreferenceDelete(DeleteView):
 	model = Preferences
 	success_url = reverse_lazy('preference-list')
+
+
+class PreferenceListView(ListView):
+
+	model = Preferences
+	template_name = 'preference_list.html'
+	context_object_name = 'prefence_list'
