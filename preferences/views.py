@@ -99,7 +99,7 @@ class PreferenceDelete(DeleteView):
 
 
 class PreferenceListView(ListView):
-
 	model = Preferences
+	queryset = Preferences.objects.order_by('-created_date')
 	template_name = 'preference_list.html'
 	context_object_name = 'prefence_list'

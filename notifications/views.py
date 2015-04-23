@@ -8,8 +8,10 @@ from .models import Notifications
 class NotificationListView(ListView):
 
 	model = Notifications
+	queryset = Notifications.objects.order_by('-created_date')
 	template_name = 'notifications_list.html'
 	context_object_name = 'notifications_list'
+
 
 class NotificationView(View):
 	model = Notifications

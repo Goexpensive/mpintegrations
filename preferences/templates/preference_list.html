@@ -28,8 +28,8 @@
 			    	<td>{{ preference.quantity }}</td>
 			    	<td>{{ preference.unit_price }}</td>
 			    	<td>{{ preference.currency_id }}</td>
-			    	<td><a href="{{ preference.init_point }}" name="MP-Checkout" class="green-L-Rn" mp-mode="modal">Pagar</a></td>
-			    	<td><a href="{{ preference.sanbox_init_point }}" name="MP-Checkout" class="green-L-Rn" mp-mode="modal">Pagar</a></td>
+			    	<td><a class="btn btn-success btn-lg" href="{{ preference.init_point }}" role="button">Pagar</a></td>
+			    	<td><a class="btn btn-primary btn-lg" href="{{ preference.sandbox_init_point }}" role="button">Pagar</a></td>
 			    	<td>{{ preference.notification_url }}</td>
 			    	<td>{{ preference.external_reference }}</td>
 			    	<td>{{ preference.email }}</td>
@@ -40,9 +40,6 @@
 			{% endfor %}
 			</table>
 		</div>
-	<ul>
-	
-	</ul>
 
 	<hr>
 
@@ -50,12 +47,6 @@
 	  <p>&copy; Company 2014</p>
 	</footer>
 	</div> <!-- /container -->
-	<script type="text/javascript">
-	    (function(){function $MPBR_load(){window.$MPBR_loaded !== true && (function(){var s = document.createElement("script");s.type = "text/javascript";s.async = true;
-	    s.src = ("https:"==document.location.protocol?"https://www.mercadopago.com/org-img/jsapi/mptools/buttons/":"http://mp-tools.mlstatic.com/buttons/")+"render.js";
-	    var x = document.getElementsByTagName('script')[0];x.parentNode.insertBefore(s, x);window.$MPBR_loaded = true;})();}
-	    window.$MPBR_loaded !== true ? (window.attachEvent ? window.attachEvent('onload', $MPBR_load) : window.addEventListener('load', $MPBR_load, false)) : null;})();
-	</script>
 
 
 {% endblock %}
