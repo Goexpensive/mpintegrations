@@ -7,8 +7,6 @@
 		</div>
 	</div>
 
-	<div class="container">
-
 	<ul>
 	{% for notification in notifications_list %}
 	    <li>{{ notification.id }} - {{ notification.topic}}</li>
@@ -16,13 +14,6 @@
 	    <li>No Notification yet.</li>
 	{% endfor %}
 	</ul>
-
-	<hr>
-
-	<footer>
-	  <p>&copy; Company 2014</p>
-	</footer>
-	</div> <!-- /container -->
 
 
 {% endblock %}

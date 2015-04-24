@@ -53,7 +53,7 @@ class PreferenceCreate(CreateView):
 				"surname" : getattr(args,'surname'),
 				"email" : getattr(args,'email'),
 				"identification":{
-					"id":getattr(args,'identification_id'),
+					"type":getattr(args,'identification_type'),
 					"number":getattr(args,'identification_number'),
 				}
 			},
