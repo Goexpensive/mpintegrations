@@ -1,8 +1,9 @@
 from django.views.generic.edit import CreateView, UpdateView, DeleteView
 from django.core.urlresolvers import reverse_lazy
-from django.views.generic.list import ListView
 from django.shortcuts import redirect
 from django.http import HttpResponse
+from django.views.generic.list import ListView
+from django.views.generic import TemplateView
 from libs.mercadopago import *
 import os
 import json
@@ -11,13 +12,16 @@ from .models import Preferences
 class PreferenceCreate(CreateView):
 	model = Preferences
 	template_name = 'preference_form.html'
-	fields = ['title','quantity','unit_price','currency_id','picture_url','description','category_id','name','surname','email','success','failure',
-	'pending','auto_return','excluded_payment_methods','excluded_payment_types','installments','default_payment_method_id','default_installments',
-	'expires','expiration_date_from','expiration_date_to','notification_url','external_reference',
+	fields = ['title','quantity','unit_price','currency_id','picture_url','description','category_id','name','surname','email',
+	'identification_type','identification_number','success','failure','pending','auto_return','excluded_payment_methods',
+	'excluded_payment_types','installments','default_payment_method_id','default_installments',	'expires','expiration_date_from',
+	'expiration_date_to','notification_url','external_reference','marketplace','marketplace_fee','additional_info',
+	'differential_pricing',
 	]
 
 	
 	def post(self, request, *args, **kwarg):
+		self.object = None
 		form = self.get_form()
 		if form.is_valid():
 			preference_model = form.save(commit=False)
@@ -48,6 +52,10 @@ class PreferenceCreate(CreateView):
 				"name" : getattr(args,'name'),
 				"surname" : getattr(args,'surname'),
 				"email" : getattr(args,'email'),
+				"identification":{
+					"id":getattr(args,'identification_id'),
+					"number":getattr(args,'identification_number'),
+				}
 			},
 			"back_urls" : {
 				"success" : getattr(args,'success'),
@@ -75,6 +83,11 @@ class PreferenceCreate(CreateView):
 			"expires" : getattr(args,'expires'),
 			"expiration_date_from" : getattr(args,'expiration_date_from'),
 			"expiration_date_to" : getattr(args,'expiration_date_to'),
+			"marketplace" : getattr(args,'marketplace'),
+			"marketplace_fee" : getattr(args,'marketplace_fee'),
+			"additional_info" : getattr(args,'additional_info'),
+			"differential_pricing" : getattr(args,'differential_pricing'),
+
 		}
 
 		mp = MP(os.environ['MP_CLIENT_ID'], os.environ['MP_CLIENT_SECRET'])
@@ -89,13 +102,33 @@ class PreferenceCreate(CreateView):
 		return args
 
 
-class PreferenceUpdate(UpdateView):
+class PreferenceOptionsView(TemplateView):
 	model = Preferences
-	fields = ['title']
+	template_name = 'preferences_options.html'
 
-class PreferenceDelete(DeleteView):
-	model = Preferences
-	success_url = reverse_lazy('preference-list')
+	def post(self, request, *args, **kwarg):
+
+		return HttpResponse(request)
+
+
+	def get_context_data(self, **kwargs):
+	    # Call the base implementation first to get a context
+	    context = super(PreferenceOptionsView, self).get_context_data(**kwargs)
+	    # Get the fields names.
+	    field_names = self.model._meta.get_all_field_names()
+
+	    context['field_names'] = field_names
+	    return context
+
+	def get_model_field(self):
+		filter_fields = ['title','quantity','unit_price','currency_id']
+		field_names = self.model._meta.get_all_field_names()
+		for field in filter_fields:
+			field_names.remove(field)
+
+		return field_names
+
+
 
 
 class PreferenceListView(ListView):

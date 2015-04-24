@@ -6,6 +6,7 @@ requirements/dev.txt
 requirements/test.txt
 mpintegrations/settings/local.py
 mpintegrations/settings/test.py
+home/templates/example.html
 
 # Byte-compiled / optimized / DLL files
 __pycache__/

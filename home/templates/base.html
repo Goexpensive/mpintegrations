@@ -54,9 +54,16 @@
         </div><!--/.navbar-collapse -->
       </div>
     </nav>
+    <div class="container">
     {% block cuerpo %}
     {% endblock %}
-    
+ 
+    <hr>
+
+    <footer>
+      <p>&copy; Company {% now "Y" %}</p>
+    </footer>
+  </div> <!-- /container -->   
 
 
     <!-- Bootstrap core JavaScript
