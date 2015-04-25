@@ -43,3 +43,11 @@ class Preferences(models.Model):
 
 	def get_absolute_url(self):
 		return reverse('preference-detail', kwargs={'pk': self.pk})
+
+
+class PreferenceOptions(models.Model):
+	name = models.CharField(max_length=255)
+	list_fields = models.TextField()
+
+	def __str__(self):
+		return str(self.title)

@@ -7,7 +7,7 @@ from django.views.generic import TemplateView
 from libs.mercadopago import *
 import os
 import json
-from .models import Preferences
+from .models import Preferences,PreferenceOptions
 
 class PreferenceCreate(CreateView):
 	model = Preferences
@@ -103,28 +103,27 @@ class PreferenceCreate(CreateView):
 
 
 class PreferenceOptionsView(TemplateView):
-	model = Preferences
+	model = PreferenceOptions
 	template_name = 'preferences_options.html'
 
 	def post(self, request, *args, **kwarg):
+		post_data = request.POST
 
-		return HttpResponse(request)
+		return HttpResponse(post_data)
 
 
 	def get_context_data(self, **kwargs):
 	    # Call the base implementation first to get a context
 	    context = super(PreferenceOptionsView, self).get_context_data(**kwargs)
 	    # Get the fields names.
-	    field_names = self.model._meta.get_all_field_names()
+	    fields = Preferences.objects.all()
+	    field_names = fields.model._meta.get_all_field_names()
 
 	    context['field_names'] = field_names
 	    return context
 
 	def get_model_field(self):
-		filter_fields = ['title','quantity','unit_price','currency_id']
 		field_names = self.model._meta.get_all_field_names()
-		for field in filter_fields:
-			field_names.remove(field)
 
 		return field_names
 
