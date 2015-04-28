@@ -1,24 +1,39 @@
 from django.views.generic.edit import CreateView, UpdateView, DeleteView
-from django.core.urlresolvers import reverse_lazy
+from django.shortcuts import get_object_or_404
+from django.core.urlresolvers import reverse_lazy,reverse
 from django.shortcuts import redirect
 from django.http import HttpResponse
 from django.views.generic.list import ListView
 from django.views.generic import TemplateView
+from django.views.generic.edit import FormView
 from libs.mercadopago import *
 import os
 import json
 from .models import Preferences,PreferenceOptions
+from .forms import PreferencesCustomForm
 
 class PreferenceCreate(CreateView):
 	model = Preferences
+	Custom = PreferenceOptions
 	template_name = 'preference_form.html'
-	fields = ['title','quantity','unit_price','currency_id','picture_url','description','category_id','name','surname','email',
-	'identification_type','identification_number','success','failure','pending','auto_return','excluded_payment_methods',
-	'excluded_payment_types','installments','default_payment_method_id','default_installments',	'expires','expiration_date_from',
-	'expiration_date_to','notification_url','external_reference','marketplace','marketplace_fee','additional_info',
-	'differential_pricing',
-	]
+	fields = []
 
+	#Pasar la lista de campos a una lista.
+	def get(self, request, *args, **kwargs):
+		"""
+		Handles GET requests and instantiates a blank version of the form.
+		"""
+		self.object = None
+		form = self.get_form()
+
+		filters = kwargs.get('filters')
+		filters = get_object_or_404(self.Custom,name=filters)
+		get_fields = filters.list_fields.strip().split(", ")
+		for field in get_fields:
+			self.fields.append(field)
+		
+		return selfs.render_to_response(self.get_context_data(form=form))
+	
 	
 	def post(self, request, *args, **kwarg):
 		self.object = None
@@ -100,33 +115,37 @@ class PreferenceCreate(CreateView):
 		setattr(args,'sandbox_init_point',sandbox_init_point)
 		
 		return args
+		
 
-
-class PreferenceOptionsView(TemplateView):
-	model = PreferenceOptions
+class PreferencesCustomView(FormView):
 	template_name = 'preferences_options.html'
+	form_class = PreferencesCustomForm
+	model = PreferenceOptions
 
-	def post(self, request, *args, **kwarg):
-		post_data = request.POST
+	def post(self, request, *args, **kwargs):
+		"""
+		Handles POST requests, instantiating a form instance with the passed
+		POST variables and then checked for validity.
+		"""
+		self.object = None
+		form = self.get_form()
 
-		return HttpResponse(post_data)
+		if form.is_valid():
+			data = form.cleaned_data
+			name = data['name']
+			list_fields = data['list_fields']
+			custom_preference = self.model(name=name,list_fields=list_fields)
+			custom_preference.save()
+
+			return self.form_valid(form)
+
+		else:
+			return self.form_invalid(form)
+		
 
 
-	def get_context_data(self, **kwargs):
-	    # Call the base implementation first to get a context
-	    context = super(PreferenceOptionsView, self).get_context_data(**kwargs)
-	    # Get the fields names.
-	    fields = Preferences.objects.all()
-	    field_names = fields.model._meta.get_all_field_names()
-
-	    context['field_names'] = field_names
-	    return context
-
-	def get_model_field(self):
-		field_names = self.model._meta.get_all_field_names()
-
-		return field_names
-
+	def get_success_url(self):
+		return reverse('preference_list')
 
 
 
