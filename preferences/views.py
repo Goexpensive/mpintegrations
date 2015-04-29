@@ -24,15 +24,15 @@ class PreferenceCreate(CreateView):
 		Handles GET requests and instantiates a blank version of the form.
 		"""
 		self.object = None
-		form = self.get_form()
+		
 
 		filters = kwargs.get('filters')
 		filters = get_object_or_404(self.Custom,name=filters)
 		get_fields = filters.list_fields.strip().split(", ")
 		for field in get_fields:
 			self.fields.append(field)
-		
-		return selfs.render_to_response(self.get_context_data(form=form))
+		form = self.get_form()
+		return self.render_to_response(self.get_context_data(form=form))
 	
 	
 	def post(self, request, *args, **kwarg):
