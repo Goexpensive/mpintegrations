@@ -27,10 +27,9 @@ class PreferenceCreate(CreateView):
 		
 
 		filters = kwargs.get('filters')
-		filters = get_object_or_404(self.Custom,name=filters)
-		get_fields = filters.list_fields.strip().split(", ")
-		for field in get_fields:
-			self.fields.append(field)
+		filters = self.Custom.objects.filter(name=filters)
+		get_fields = filters[0].list_fields
+		self.fields = json.loads(get_fields)
 		form = self.get_form()
 		return self.render_to_response(self.get_context_data(form=form))
 	
@@ -133,7 +132,7 @@ class PreferencesCustomView(FormView):
 		if form.is_valid():
 			data = form.cleaned_data
 			name = data['name']
-			list_fields = data['list_fields']
+			list_fields = json.dumps(data['list_fields'])
 			custom_preference = self.model(name=name,list_fields=list_fields)
 			custom_preference.save()
 
