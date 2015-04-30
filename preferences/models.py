@@ -37,6 +37,11 @@ class Preferences(models.Model):
 	marketplace_fee = models.FloatField(blank=True, null=True)
 	differential_pricing = models.IntegerField(blank=True,null=True)
 	additional_info = models.CharField(max_length=600, null=True,blank=True)
+	dimensions = models.CharField(max_length=255, null=True,blank=True)
+	mode = models.CharField(max_length=255, null=True,blank=True) 
+	local_pickup = models.NullBooleanField(blank=True)
+	free_methods = models.IntegerField(null= True, blank=True)
+	json = models.TextField(null=True,blank=True) 
 
 	def __str__(self):
 		return str(self.title)
@@ -45,9 +50,10 @@ class Preferences(models.Model):
 		return reverse('preference-detail', kwargs={'pk': self.pk})
 
 
-class PreferenceOptions(models.Model):
+class PreferenceTemplates(models.Model):
 	name = models.CharField(max_length=255)
 	list_fields = models.TextField()
+	created_date = models.DateTimeField(auto_now_add = True, blank = True)
 
 	def __str__(self):
 		return str(self.name)

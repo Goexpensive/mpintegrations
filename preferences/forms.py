@@ -3,17 +3,17 @@ from .models import Preferences
 
 
 
-class PreferencesCustomForm(forms.Form):
+class PreferencesTemplateForm(forms.Form):
 
 	model = Preferences
 	
 	name = forms.CharField()
-	list_fields = forms.MultipleChoiceField(required=False,widget=forms.SelectMultiple, choices='')
+	list_fields = forms.MultipleChoiceField(required=False,widget=forms.CheckboxSelectMultiple, choices='')
 
 	def __init__(self, *args, **kwargs):
-		super(PreferencesCustomForm, self).__init__(*args, **kwargs)
+		super(PreferencesTemplateForm, self).__init__(*args, **kwargs)
 		field_touples = self.get_model_field()
-		self.fields['list_fields'] = forms.MultipleChoiceField(choices = self.get_model_field() )
+		self.fields['list_fields'] = forms.MultipleChoiceField(widget=forms.CheckboxSelectMultiple,choices = self.get_model_field() )
 	
 	def get_model_field(self):
 		field_names = self.model._meta.get_all_field_names()

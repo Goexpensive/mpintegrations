@@ -4,6 +4,10 @@ from django.views.generic import View
 from django.views.generic.list import ListView
 from .models import Notifications
 
+from libs.mercadopago import *
+import os
+import json
+
 
 class NotificationListView(ListView):
 
@@ -21,13 +25,21 @@ class NotificationView(View):
 	topic = str()
 
 	def get(self,request, **kwargs):
+		data = self.get_data(data = self.request.GET)
+		if self.is_valid(data):
+			notification_info = self.get_notification_data(self.id,self.topic)
+			notification = Notifications(mp_id = self.id, topic = self.topic, notification_json = notification_info)
+			notification.save()
+			return render(request, 'notification_test.html', {'data':notification})
+		else:
 			notification = 'No hay nuevas notificaciones'
 			return render(request, 'notification_test.html', {'data':notification})
 	
 	def post(self,request, **kwargs):
 		data = self.get_data(data = self.request.GET)
 		if self.is_valid(data):
-			notification = Notifications(id = self.id, topic = self.topic)
+			notification_info = self.get_notification_data(self.id,self.topic)
+			notification = Notifications(mp_id = self.id, topic = self.topic, notification_json = notification_info)
 			notification.save()
 			return render(request, 'notification_test.html', {'data':notification})
 		else:
@@ -51,7 +63,23 @@ class NotificationView(View):
 			self.topic = str(topic)
 			return True
 		else: 
-			return False	 
+			return False
+
+	def get_notification_data(self,id,topic):
+		mp = MP(os.environ['MP_CLIENT_ID'], os.environ['MP_CLIENT_SECRET'])
+		notification_info = []
+		if topic == 'payment':
+			notification_info = mp.get("/collections/notifications/" + str(id) )
+		
+		if topic == 'merchant_order':
+			notification_info = mp.get("/merchant_orders/" + str(id) )
+		
+		return notification_info	
+
+
+		
+
+
 
 
 

@@ -1,22 +1,22 @@
-from django.views.generic.edit import CreateView, UpdateView, DeleteView
-from django.shortcuts import get_object_or_404
+from django.http import HttpResponse
+
+from django.views.generic import CreateView,ListView,FormView
 from django.core.urlresolvers import reverse_lazy,reverse
 from django.shortcuts import redirect
-from django.http import HttpResponse
-from django.views.generic.list import ListView
-from django.views.generic import TemplateView
-from django.views.generic.edit import FormView
+
 from libs.mercadopago import *
 import os
 import json
-from .models import Preferences,PreferenceOptions
-from .forms import PreferencesCustomForm
+
+from .models import Preferences,PreferenceTemplates
+from .forms import PreferencesTemplateForm
 
 class PreferenceCreate(CreateView):
 	model = Preferences
-	Custom = PreferenceOptions
+	Custom = PreferenceTemplates
 	template_name = 'preference_form.html'
-	fields = []
+	fields = '__all__'
+
 
 	#Pasar la lista de campos a una lista.
 	def get(self, request, *args, **kwargs):
@@ -24,17 +24,16 @@ class PreferenceCreate(CreateView):
 		Handles GET requests and instantiates a blank version of the form.
 		"""
 		self.object = None
-		
-
 		filters = kwargs.get('filters')
-		filters = self.Custom.objects.filter(name=filters)
-		get_fields = filters[0].list_fields
-		self.fields = json.loads(get_fields)
+		if filters is not None:
+			filters = self.Custom.objects.filter(name=filters)
+			get_fields = filters[0].list_fields
+			self.fields = json.loads(get_fields)
 		form = self.get_form()
 		return self.render_to_response(self.get_context_data(form=form))
 	
 	
-	def post(self, request, *args, **kwarg):
+	def post(self, request, *args, **kwargs):
 		self.object = None
 		form = self.get_form()
 		if form.is_valid():
@@ -46,6 +45,13 @@ class PreferenceCreate(CreateView):
 
 			return redirect('preference_list')
 		else:
+			filters = kwargs.get('filters')
+			if filters is not None:
+				filters = self.Custom.objects.filter(name=filters)
+				get_fields = filters[0].list_fields
+				self.fields = json.loads(get_fields)
+				form = self.get_form()
+
 			return self.form_invalid(form)
 	
 	def get_preference(self,args):
@@ -53,15 +59,21 @@ class PreferenceCreate(CreateView):
 		#getattr(args, = kwarg.get('getattr(args,'),
 		preference_data = {
 			"items" : [{
-				"id" : getattr(args, 'id'),
-				"title" : getattr(args, 'title'),
+				"id" : 			getattr(args, 'id'),
+				"title" : 		getattr(args, 'title'),
 				"currency_id" : getattr(args,'currency_id'),
 				"picture_url" : getattr(args,'picture_url'),
 				"description" : getattr(args,'description'),
 				"category_id" : getattr(args,'category_id'),
 				"quantity" : 	getattr(args,'quantity'),
 				"unit_price" : 	getattr(args,'unit_price'),
+				"dimensions": 	getattr(args,'dimensions'),
 			}],
+			"shipments": {
+				"mode": getattr(args,'mode'),
+				"local_pickup": getattr(args,'local_pickup'),
+				"free_methods": [{"id": getattr(args,'free_methods'),}],
+			},
 			"payer" : {
 				"name" : getattr(args,'name'),
 				"surname" : getattr(args,'surname'),
@@ -107,7 +119,7 @@ class PreferenceCreate(CreateView):
 		mp = MP(os.environ['MP_CLIENT_ID'], os.environ['MP_CLIENT_SECRET'])
 
 		preferenceResult = mp.create_preference(preference_data)
-
+		setattr(args,'json',preferenceResult["response"])
 		sandbox_init_point = preferenceResult["response"]["sandbox_init_point"]
 		init_point = preferenceResult["response"]["init_point"]
 		setattr(args,'init_point',init_point)
@@ -116,10 +128,10 @@ class PreferenceCreate(CreateView):
 		return args
 		
 
-class PreferencesCustomView(FormView):
-	template_name = 'preferences_options.html'
-	form_class = PreferencesCustomForm
-	model = PreferenceOptions
+class PreferencesTemplateView(FormView):
+	template_name = 'preferences_template.html'
+	form_class = PreferencesTemplateForm
+	model = PreferenceTemplates
 
 	def post(self, request, *args, **kwargs):
 		"""

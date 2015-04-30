@@ -14,4 +14,4 @@ class PreferencesAdmin(admin.ModelAdmin):
 
 admin.site.register(Preferences, PreferencesAdmin)
 
-admin.site.register(PreferenceOptions)
+admin.site.register(PreferenceTemplates)

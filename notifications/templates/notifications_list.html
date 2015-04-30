@@ -1,19 +1,35 @@
 {% extends 'base.html' %}
 
 {% block cuerpo %}
-	<div class="jumbotron">
-		<div class="container">
-			<h1>Notification List</h1>
+		<div class="jumbotron">
+			<div class="container">
+				<h1>Notification List</h1>
+			</div>
 		</div>
-	</div>
 
-	<ul>
-	{% for notification in notifications_list %}
-	    <li>{{ notification.id }} - {{ notification.topic}}</li>
-	{% empty %}
-	    <li>No Notification yet.</li>
-	{% endfor %}
-	</ul>
+		<div class="table-responsive">
+			<table class="table">
+				<tr class="active">
+					<th> Topic </th>
+					<th> Mp Id </th>
+			    	<th> Created Date </th>
+			    	<th> Laste Modified Date </th>
+			    	<th> Json </th>
+				</tr>
+			{% for notification in notifications_list %}
+				<tr>
+			    	<td>{{ notification.topic }}</td>
+			    	<td>{{ notification.mp_id }}</td>
+			    	<td>{{ notification.created_date }}</td>
+			    	<td>{{ notification.last_modified_date }}</td>
+			    	<td>{{ notification.notification_json }}</td>
+			    </tr>
+
+			{% empty %}
+			    <li>No Notification yet.</li>
+			{% endfor %}
+			</table>
+		</div>
 
 
 {% endblock %}

@@ -27,7 +27,15 @@
             <p>
               <a class="btn btn-lg btn-success" href="{% url 'preference_add' %}" role="button">Create Preferences</a>
             </p>
-            
+              {% for preference in preference_templates %}
+                  <p>
+                    <a class="btn btn-lg btn-success" href="{% url 'preference_add_custom'  preference.name %}" role="button"> {{preference.name|title}}</a>
+                  </p>
+                {% empty %}
+                  <p>
+                    <a class="btn btn-lg btn-success" href="{% url 'preference_add' %}" role="button"> Preference Complete</a>
+                  </p>
+              {% endfor %}
           </div>
         </div>
       </div>
