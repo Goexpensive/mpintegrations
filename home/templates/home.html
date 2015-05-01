@@ -29,7 +29,7 @@
             </p>
               {% for preference in preference_templates %}
                   <p>
-                    <a class="btn btn-lg btn-success" href="{% url 'preference_add_custom'  preference.name %}" role="button"> {{preference.name|title}}</a>
+                    <a class="btn btn-lg btn-success" href="{% url 'preference_add_custom'  preference.slug %}" role="button"> {{preference.name|title}}</a>
                   </p>
                 {% empty %}
                   <p>

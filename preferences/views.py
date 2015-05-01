@@ -26,11 +26,11 @@ class PreferenceCreate(CreateView):
 		self.object = None
 		filters = kwargs.get('filters')
 		if filters is not None:
-			filters = self.Custom.objects.filter(name=filters)
+			filters = self.Custom.objects.filter(slug = filters)
 			get_fields = filters[0].list_fields
 			self.fields = json.loads(get_fields)
 		form = self.get_form()
-		return self.render_to_response(self.get_context_data(form=form))
+		return self.render_to_response(self.get_context_data(form = form))
 	
 	
 	def post(self, request, *args, **kwargs):
@@ -44,10 +44,11 @@ class PreferenceCreate(CreateView):
 			preference_model.save()
 
 			return redirect('preference_list')
+			return HttpResponse(json.dumps(preference_model), content_type="application/json")
 		else:
 			filters = kwargs.get('filters')
 			if filters is not None:
-				filters = self.Custom.objects.filter(name=filters)
+				filters = self.Custom.objects.filter( slug = filters)
 				get_fields = filters[0].list_fields
 				self.fields = json.loads(get_fields)
 				form = self.get_form()
@@ -72,7 +73,7 @@ class PreferenceCreate(CreateView):
 			"shipments": {
 				"mode": getattr(args,'mode'),
 				"local_pickup": getattr(args,'local_pickup'),
-				"free_methods": [{"id": getattr(args,'free_methods'),}],
+				#"free_methods": [{"id": getattr(args,'free_methods'),}],
 			},
 			"payer" : {
 				"name" : getattr(args,'name'),
@@ -119,13 +120,16 @@ class PreferenceCreate(CreateView):
 		mp = MP(os.environ['MP_CLIENT_ID'], os.environ['MP_CLIENT_SECRET'])
 
 		preferenceResult = mp.create_preference(preference_data)
+
+
 		setattr(args,'json',preferenceResult["response"])
 		sandbox_init_point = preferenceResult["response"]["sandbox_init_point"]
 		init_point = preferenceResult["response"]["init_point"]
 		setattr(args,'init_point',init_point)
 		setattr(args,'sandbox_init_point',sandbox_init_point)
-		
+
 		return args
+
 		
 
 class PreferencesTemplateView(FormView):
@@ -145,7 +149,7 @@ class PreferencesTemplateView(FormView):
 			data = form.cleaned_data
 			name = data['name']
 			list_fields = json.dumps(data['list_fields'])
-			custom_preference = self.model(name=name,list_fields=list_fields)
+			custom_preference = self.model(name = name,list_fields = list_fields)
 			custom_preference.save()
 
 			return self.form_valid(form)
