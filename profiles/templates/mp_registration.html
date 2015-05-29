@@ -1,0 +1,15 @@
+{% extends 'base.html' %}
+
+{% block cuerpo %}
+{% load bootstrap %}
+<div class="jumbotron">
+	<div class="container">
+		<h1>Sign-up</h1>
+	</div>
+</div>
+
+<p>
+	<a href="https://auth.mercadopago.com.br/authorization?client_id=2386081208441049&response_type=code&platform_id=mp&redirect_uri=http%3A%2F%2F127.0.0.1:8000/mp-authorization">Sing - Up with MercadoPago</a>
+</p>
+
+{% endblock %}

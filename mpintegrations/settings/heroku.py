@@ -43,6 +43,7 @@ INSTALLED_APPS = (
     'notifications',
     'preferences',
     'home',
+    'profiles',
 )
 
 MIDDLEWARE_CLASSES = (
@@ -128,3 +129,4 @@ STATIC_URL = '/static/'
 STATICFILES_DIRS = (
     os.path.join(BASE_DIR, 'static'),
 )
+

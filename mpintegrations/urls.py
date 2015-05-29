@@ -13,4 +13,5 @@ urlpatterns = [
     url('', include('checkout.urls')),
     url('', include('notifications.urls')),
     url('', include('preferences.urls')),
+    url('', include('profiles.urls')),
 ]
