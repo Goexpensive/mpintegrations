@@ -11,6 +11,7 @@ class Profile(models.Model):
 	access_token = models.CharField(max_length=254, blank=True, null=True)
 	public_key = models.CharField(max_length=254, blank=True, null=True)
 	refresh_token = models.CharField(max_length=254, blank=True, null=True)
+	mp_email = models.EmailField(max_length=254, blank=True, null=True)
 
 	def create_user_profile(sender, instance, created, **kwargs):
 		if created:

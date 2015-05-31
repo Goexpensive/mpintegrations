@@ -1,0 +1,37 @@
+{% extends 'base.html' %}
+
+{% block cuerpo %}
+{% load bootstrap %}
+<div class="jumbotron">
+	<div class="container">
+		<h1>Sign-up</h1>
+	</div>
+</div>
+
+<p>
+MP_USER_ID:
+{{ profile.mercadopago_user_id }}
+</p>
+<p>
+ACCESS_TOKEN:
+{{ profile.access_token }}
+</p>
+<p>
+PUBLIC_KEY:
+{{ profile.public_key }}
+</p>
+<p>
+REFRESH_TOKEN:
+{{ profile.refresh_token }}
+</p>
+
+
+
+
+<p>
+	<a href="https://auth.mercadopago.com.br/authorization?client_id=2386081208441049&response_type=code&platform_id=mp&redirect_uri=http%3A%2F%2F127.0.0.1:8000/profile/{{ profile.id }}">MercadoPago's Credentials</a>
+</p>
+
+
+
+{% endblock %}
