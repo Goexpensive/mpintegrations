@@ -1,0 +1,283 @@
+{% extends 'base.html' %}
+
+{% block cuerpo %}
+<div class="jumbotron">
+	<div class="container">
+		<h1>Marketplace</h1>
+	</div>
+</div>
+<h1>Propuesta de carritos con APIs/SDKs actuales</h1>
+
+
+<div class="row">
+    <!-- AGREGAR ITEM AL CARRITO -->
+	<div class="col-lg-4 border_cart">
+		<h2>Add items</h2> 
+		<div class="form-group">
+			<label for="seller">Seller</label>
+			<select class="form-control" id="seller">
+                {% for seller in sellers %}
+				    <option value="{{seller.profile.public_key}};{{seller.profile.access_token}}">{{seller.username}} - ({{seller.profile.mercadopago_user_id}} - {{seller.profile.mp_email}})</option>
+                {% endfor %}    
+			</select>
+		</div>
+		<div class="form-group">
+			<label for="description">Item description:</label>
+			<input class="form-control" type="text" id="description" placeholder="Cart - Item 1 description" value="Carrito - Item 1 description"  />
+		</div>
+		<div class="form-group">
+			<label for="transaction_amount">transaction_amount:</label>
+			<input class="form-control" type="text" id="transaction_amount" placeholder="100" value="100" />
+		</div>
+		<div class="form-group">
+			<label for="application_fee">application_fee:</label>
+			<input class="form-control" type="text" id="application_fee" placeholder="3" value="3" />
+		</div>
+		<div class="btn-group btn-group-justified" role="group" >
+			<div class="btn-group" role="group">
+				<input class="btn btn-danger" type="button" value="Add item to cart" id="addBtn" />
+			</div>	
+		</div>
+	</div>
+    <div class="col-lg-4 border_cart">        
+		<!-- ITEMS EN EL CARRITO -->
+		<h2>Cart</h2> 
+        <ul class="list-group" id="itemList">
+           <li class="list-group-item" id="totalCart">
+               Total:$ 0
+            </li>
+        </ul>
+	</div>
+		<div class="col-lg-4 border_cart">
+		<h2>Credit card form</h2> 
+        <p id="totalAPagar"> Payment total amount: $0 </p>   
+	<!-- FORMULARIO DE TC -->
+	    <form action="" method="post" id="pay" name="pay">
+			<div class="input-group">
+				<span class="input-group-addon" id="basic-addon-email">@</span>
+				<input id="email" class="form-control" name="email" value="" type="email" placeholder="your email" aria-describedby="basic-addon-email"/>
+			</div>
+			<br />
+			<div class="input-group">
+				<span class="input-group-addon" id="basic-addon-cc">Card Number</span>
+				<input type="text" class="form-control" id="cardNumber" data-checkout="cardNumber" placeholder="4235 6477 2802 5682" value="4235 6477 2802 5682" aria-describedby="basic-addon-email"/>
+			</div>
+			<br />
+			<div class="input-group">
+				<span class="input-group-addon" id="basic-addon-ccv">CCV</span>
+				<input type="text" class="form-control" id="securityCode" data-checkout="securityCode" placeholder="123" value="123" aria-describedby="basic-addon-ccv"/>
+			</div>
+			<br />
+			<div class="input-group">
+				<span class="input-group-addon" id="basic-addon-month">Month</span>
+				<input type="text" class="form-control" id="cardExpirationMonth" data-checkout="cardExpirationMonth" placeholder="12" value="12" aria-describedby="basic-addon-month"/>
+			</div>
+			<br />
+			<div class="input-group">
+				<span class="input-group-addon" id="basic-addon-year">year</span>
+				<input type="text"  class="form-control" id="cardExpirationYear" data-checkout="cardExpirationYear" placeholder="2015" value="2015" aria-describedby="basic-addon-year"/>
+			</div>
+			<br />
+			<div class="input-group">
+				<span class="input-group-addon" id="basic-addon-name">Name</span>
+				<input type="text" class="form-control" id="cardholderName" data-checkout="cardholderName" placeholder="APRO" value="APRO" aria-describedby="basic-addon-name"/>
+			</div>
+			<br />
+			<div class="input-group">
+				<select id="docType" class="form-control" data-checkout="docType" aria-describedby="basic-addon-docType"></select>
+				<span class="input-group-addon" id="basic-addon-docType">Document type</span>
+			</div>
+			<br />
+			<div class="input-group">
+				<input type="text" class="form-control" id="docNumber" data-checkout="docNumber" placeholder="23684743828" value="23684743828" aria-describedby="basic-addon-docNumber"/>
+				<span class="input-group-addon" id="basic-addon-docNumber">Document Number</span>
+			</div>
+			<br />
+			<div class="btn-group btn-group-justified" role="group" >
+				<div class="btn-group" role="group">
+					<input class="btn btn-danger" type="submit" value="Pay!" />
+				</div>	
+			</div>
+			
+	    </form> 
+    </div>  
+</div>
+
+
+
+        <p id="tokens"></p>
+
+        <pre id="code"></pre>
+
+        <script type="text/javascript">
+
+            /*
+             * CART HANDLING
+             */
+
+            var itemList = [];
+            var suma = 0;
+
+            function addItem(event){
+                //event.preventDefault();
+                itemList[itemList.length] = [
+                    document.getElementById("seller").value.split(";")[0], // public_key
+                    document.getElementById("seller").value.split(";")[1], // access_token
+                    document.getElementById("description").value,
+                    document.getElementById("transaction_amount").value,
+                    document.getElementById("application_fee").value
+                ];
+                //alert(itemList);
+                document.getElementById("itemList").innerHTML += "<li class=\"list-group-item\">" + document.getElementById("description").value + " // $" + document.getElementById("transaction_amount").value + "</li>";
+                suma = suma + parseFloat(document.getElementById("transaction_amount").value);
+                document.getElementById("totalCart").innerHTML = "Total: $" + suma.toFixed(2);
+                document.getElementById("totalAPagar").innerHTML = "Payment total amount: $" + suma.toFixed(2);
+
+            };
+            addEvent(document.querySelector('#addBtn'),'click',addItem);
+
+            /*
+             * CREDIT CARD FORM AND PAYMENT HANDLING
+             */
+
+            /* CONFIGURO LA PK DEL SELLER 1 */
+            var public_key = "{{public_key}}";
+            console.log(public_key);
+            Mercadopago.setPublishableKey("{{public_key}}");
+
+            Mercadopago.getIdentificationTypes();
+
+            // TODO: debe mostrarse antes de usarse por 1ra vez
+            function addEvent(el, eventName, handler){
+                if (el.addEventListener) {
+                       el.addEventListener(eventName, handler);
+                } else {
+                    el.attachEvent('on' + eventName, function(){
+                      handler.call(el);
+                    });
+                }
+            };
+
+            function getBin() {
+                var ccNumber = document.querySelector('input[data-checkout="cardNumber"]');
+                return ccNumber.value.replace(/[ .-]/g, '').slice(0, 6); // TODO cambiar por: return ccNumber ? ccNumber.value.replace(/[ .-]/g, '').slice(0, 6) : "";
+
+            };
+
+            function guessingPaymentMethod(event) {
+                var bin = getBin();
+
+                if (event.type == "keyup") {
+                    if (bin.length >= 6) {
+                        Mercadopago.getPaymentMethod({
+                            "bin": bin
+                        }, setPaymentMethodInfo);
+                    }
+                } else {
+                    setTimeout(function() {
+                        if (bin.length >= 6) {
+                            Mercadopago.getPaymentMethod({
+                                "bin": bin
+                            }, setPaymentMethodInfo);
+                        }
+                    }, 100);
+                }
+            };
+
+
+            function setPaymentMethodInfo(status, response) {
+                if (status == 200) {
+                    // do somethings ex: show logo of the payment method
+                    var form = document.querySelector('#pay');
+
+                    if (document.querySelector("input[name=paymentMethodId]") == null) {
+                        var paymentMethod = document.createElement('input');
+                        paymentMethod.setAttribute('name', "paymentMethodId");
+                        paymentMethod.setAttribute('type', "hidden");
+                        paymentMethod.setAttribute('value', response[0].id);
+
+                        form.appendChild(paymentMethod);
+                    } else {
+                        document.querySelector("input[name=paymentMethodId]").value = response[0].id;
+                    }
+                }
+            };
+
+            // TODO: SE USA ESTA FUNCIÓN ANTES DE DEFINIRLA ¿ESTÁ OK?
+            addEvent(document.querySelector('input[data-checkout="cardNumber"]'), 'keyup', guessingPaymentMethod);
+            addEvent(document.querySelector('input[data-checkout="cardNumber"]'), 'change', guessingPaymentMethod);
+
+            var doSubmit=false; // TODO: NO ESTA EN DEVSITE
+            var index;
+            function doPay(event){
+                event.preventDefault();
+                if(!doSubmit){
+                    var $form = document.querySelector('#pay');
+                    
+//                    Mercadopago.createToken($form, sdkResponseHandler);
+//
+//                    /* CONFIGURO LA PK DEL SELLER 2 */
+//                    Mercadopago.setPublishableKey("TEST-7cce70e6-ff93-4553-a80b-a71e75e037ca");
+//                    // Necesario para que el SDK pida un nuevo token y no actualice el anterior
+//                    Mercadopago.tokenId = null;
+//
+//                    Mercadopago.createToken($form, sdkResponseHandler);
+
+                    for (index = 0; index < itemList.length; index++) {
+                        /* CONFIGURO LA PK DEL SELLER 2 */
+                        Mercadopago.setPublishableKey(itemList[index][0]);
+                        console.log(itemList[index][0]);
+                        Mercadopago.createToken($form, sdkResponseHandler);
+
+                        // Necesario para que el SDK pida un nuevo token y no actualice el anterior para el próximo item del carrito
+                        Mercadopago.tokenId = null;
+                    }
+
+                    index = 0;
+                    return false;
+                }
+            };
+            addEvent(document.querySelector('#pay'),'submit',doPay); // TODO: doPay se define después de usarlo
+
+            function sdkResponseHandler(status, response) {
+                if (status != 200 && status != 201) {
+                    alert("verify filled data: " + JSON.stringify(response)); // TODO: más claro para ver el error
+                }else{
+                   
+                    var form = document.querySelector('#pay');
+
+                    var card = document.createElement('input');
+                    card.setAttribute('name',"card"); // TODO: token ==> card
+                    card.setAttribute('type',"hidden");
+                    card.setAttribute('value',response.id);
+                    form.appendChild(card);
+                    //doSubmit=true;
+                    //form.submit();
+
+                    //alert("token: "+response.id);
+                    document.getElementById("tokens").innerHTML += "token: "+response.id+"<br>";
+
+                    var curl = "";
+                    curl += "curl -X POST \\\n";
+                    curl += "    -H 'accept: application/json' \\\n";
+                    curl += "    -H 'content-type: application/json' \\\n";
+                    curl += "    https://api.mercadopago.com/v1/payments?access_token="+itemList[index][1]+" \\\n";
+                    curl += "    -d '{\n";
+                    curl += '        "transaction_amount": '+itemList[index][3]+',\n';
+                    curl += '        "token": "' + response.id + '",\n';
+                    curl += '        "description": "'+itemList[index][2]+'",\n';
+                    curl += '        "installments": 1,\n';
+                    curl += '        "payer": {\n';
+                    curl += '            "email": "test_user_96309882@testuser.com"\n';
+                    curl += '        },\n';
+                    curl += '        "payment_method_id": "visa",\n';
+                    curl += '        "application_fee": '+itemList[index][4]+'\n';
+                    curl += "    }'";
+                    document.getElementById("code").innerHTML += curl + "\n\n";
+
+                    index++;
+                }
+            };
+        </script>
+
+{% endblock %}

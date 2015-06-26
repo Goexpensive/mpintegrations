@@ -82,18 +82,17 @@ class  ProfileView(LoginRequiredMixin, View):
 
 		code = kwargs.get('code')
 		pk = kwargs.get('pk')
-		redirect_URI = 'http://127.0.0.1:8000/profile/{}'.format(pk)
-		mp = MP(os.environ['MP_CLIENT_ID'], os.environ['MP_CLIENT_SECRET'])
-		params = { 'grant_type' : 'authorization_code', 'client_id' : os.environ['MP_CLIENT_ID'], 'client_secret' : os.environ['MP_CLIENT_SECRET'], 'code' : code, 'redirect_uri' : redirect_URI}
+		redirect_URI = '{}profile/{}'.format(os.environ['URL'],pk)
+		mp = MP(os.environ['MP_SECRET_KEY'])
+		params = { 'grant_type' : 'authorization_code', 'client_id' : os.environ['MP_CLIENT_ID'], 'client_secret' : os.environ['MP_SECRET_KEY'], 'code' : code, 'redirect_uri' : redirect_URI}
 		response = mp.post('/oauth/token',None, params )
 		access_token = response['response']['access_token']
 		refresh_token = response['response']['refresh_token']
 		mercadopago_user_id = response['response']['user_id']
 		public_key = response['response']['public_key']
-		params = {'access_token':access_token}
-		mp_user_data = mp.get('/users/me',params)
+		params = {'access_token': access_token}
+		mp_user_data = mp.get('/users/' + str(mercadopago_user_id), params, None)
 		mp_email = mp_user_data['response']['email']
-
 		mp_data = {'access_token':access_token, 'refresh_token': refresh_token,'mercadopago_user_id' : mercadopago_user_id, 'public_key' : public_key, 'mp_email': mp_email}
 
 		return mp_data

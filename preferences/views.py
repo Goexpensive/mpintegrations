@@ -73,6 +73,7 @@ class PreferenceCreate(CreateView):
 			"shipments": {
 				"mode": getattr(args,'mode'),
 				"local_pickup": getattr(args,'local_pickup'),
+				#"dimensions": 	getattr(args,'dimensions'),
 				#"free_methods": [{"id": getattr(args,'free_methods'),}],
 			},
 			"payer" : {

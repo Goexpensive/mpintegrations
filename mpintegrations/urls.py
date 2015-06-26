@@ -14,4 +14,5 @@ urlpatterns = [
     url('', include('notifications.urls')),
     url('', include('preferences.urls')),
     url('', include('profiles.urls')),
+    url('', include('marketplace.urls')),
 ]

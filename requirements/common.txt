@@ -10,3 +10,4 @@ static3==0.5.1
 django-bootstrap-form==3.2
 django-pagination
 django-tastypie
+django-cors-headers==1.1.0
