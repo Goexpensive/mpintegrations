@@ -53,9 +53,10 @@
         <p id="totalAPagar"> Payment total amount: $0 </p>   
 	<!-- FORMULARIO DE TC -->
 	    <form action="" method="post" id="pay" name="pay">
+            {% csrf_token %}
 			<div class="input-group">
 				<span class="input-group-addon" id="basic-addon-email">@</span>
-				<input id="email" class="form-control" name="email" value="" type="email" placeholder="your email" aria-describedby="basic-addon-email"/>
+				<input id="email" class="form-control" name="email" value="fabio.vaccaro+182591383@mercadolibre.com" type="email" placeholder="your email" aria-describedby="basic-addon-email"/>
 			</div>
 			<br />
 			<div class="input-group">
@@ -141,9 +142,9 @@
              */
 
             /* CONFIGURO LA PK DEL SELLER 1 */
-            var public_key = "{{public_key}}";
+            var public_key = "{{sellers.0.profile.public_key}}";
             console.log(public_key);
-            Mercadopago.setPublishableKey("{{public_key}}");
+            Mercadopago.setPublishableKey(public_key);
 
             Mercadopago.getIdentificationTypes();
 
@@ -232,7 +233,6 @@
                         // Necesario para que el SDK pida un nuevo token y no actualice el anterior para el próximo item del carrito
                         Mercadopago.tokenId = null;
                     }
-
                     index = 0;
                     return false;
                 }
@@ -249,10 +249,11 @@
                     var card = document.createElement('input');
                     card.setAttribute('name',"card"); // TODO: token ==> card
                     card.setAttribute('type',"hidden");
-                    card.setAttribute('value',response.id);
+                    card.setAttribute('value',itemList[index][1]+"/"+itemList[index][3]+"/"+response.id+"/"+itemList[index][2]+"/"+itemList[index][4]);
                     form.appendChild(card);
-                    //doSubmit=true;
-                    //form.submit();
+                    console.log(response.id);
+                    doSubmit=true;
+                    form.submit();
 
                     //alert("token: "+response.id);
                     document.getElementById("tokens").innerHTML += "token: "+response.id+"<br>";

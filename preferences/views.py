@@ -44,7 +44,6 @@ class PreferenceCreate(CreateView):
 			preference_model.save()
 
 			return redirect('preference_list')
-			return HttpResponse(json.dumps(preference_model), content_type="application/json")
 		else:
 			filters = kwargs.get('filters')
 			if filters is not None:
