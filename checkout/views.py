@@ -1,34 +1,43 @@
-from django.views.generic import TemplateView
+from django.shortcuts import render
+from django.views.decorators.csrf import csrf_exempt
+from django.views.generic import TemplateView, View, CreateView, DetailView, UpdateView
+
+
 from libs.mercadopago import *
-import dateutil.parser
 import json
 import os
 
-class CheckoutView(TemplateView):
-	model = ''
+# Create your views here.
+
+class  CheckoutView(View):
 	template_name = 'checkout.html'
 
-	def get_context_data(self, **kwargs):
-		preference = {
-			"items": [
-				{
-					"title": "Multicolor kite",
-					"quantity": 1,
-					"currency_id": "ARS", # Available currencies at: https://api.mercadopago.com/currencies
-					"unit_price": 10.0
-				}
-			]
-		}
+	def get(self,request, *args, **kwargs):
 
-		mp = MP(os.environ['MP_CLIENT_ID'], os.environ['MP_CLIENT_SECRET'])
+			
+		return render(request, self.template_name, {'public_key': os.environ['MP_PUBLIC_KEY']})
+	
+	def post(self,request, *args, **kwargs):
 
-		preferenceResult = mp.create_preference(preference)
 
-		url = preferenceResult["response"]["sandbox_init_point"]
+		payment_data = self.request.POST
+		print(self.request.POST)
+		mp = MP(os.environ['MP_SECRET_KEY'])
+		payment = mp.post("/v1/payments", {
+	        "transaction_amount": 100,
+	        "token": payment_data['token'],
+	        "description": "Title of what you are paying for",
+	        "payer": {
+	            "email": payment_data['email']
+	        },
+	        "installments": int(payment_data['installments']),
+	        "payment_method_id": payment_data['paymentMethodId'],
+	       	"issuer_id": 338
+	    });
+		print(payment)
+		#if payment['status']==201:
+		#	payment = payment['response']
+		
 
-		context = super(CheckoutView, self).get_context_data(**kwargs)
-
-		context['url'] = url
-
-		return context
+		return render(request,'payments.html', {'result':payment} )
 

@@ -1,11 +1,12 @@
-from django.conf.urls import patterns, include, url
-from django.contrib import admin
-from checkout.views import CheckoutView
+from django.conf.urls import url
+from . import views
+
+urlpatterns = [
+    # ...
+
+	url(r'checkout/$', views.CheckoutView.as_view(), name='checkout'),
+
+]
 
 
-urlpatterns = patterns('',
-
-    url(r'^checkout/$', CheckoutView.as_view(), name='checkout'),
-
-)
     

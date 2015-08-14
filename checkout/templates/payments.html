@@ -1,16 +1,19 @@
-<!DOCTYPE html>
-<html>
-	<head>
-		<title>Payments</title>
-	</head>
-	<body>
-		<a href="{{url}}" name="MP-Checkout" class="green-L-Rn" mp-mode="modal">Pagar</a>
-		<script type="text/javascript">
-		    (function(){function $MPBR_load(){window.$MPBR_loaded !== true && (function(){var s = document.createElement("script");s.type = "text/javascript";s.async = true;
-		    s.src = ("https:"==document.location.protocol?"https://www.mercadopago.com/org-img/jsapi/mptools/buttons/":"http://mp-tools.mlstatic.com/buttons/")+"render.js";
-		    var x = document.getElementsByTagName('script')[0];x.parentNode.insertBefore(s, x);window.$MPBR_loaded = true;})();}
-		    window.$MPBR_loaded !== true ? (window.attachEvent ? window.attachEvent('onload', $MPBR_load) : window.addEventListener('load', $MPBR_load, false)) : null;})();
-		</script>
-	</body>
-</html>
+{% extends 'base.html' %}
+
+{% block cuerpo %}
+<div class="jumbotron">
+	<div class="container">
+		<h1>Result</h1>
+	</div>
+</div>
+<h2>{{result.response.id}}</h2>
+
+    <p>Status : {{result.response.status}}</p>
+    <p>Transaction amount : {{result.response.transaction_amount}}</p>
+    <p>Total paid amount : {{result.response.transaction_details.total_paid_amount}}</p>
+    <p>Installment amount : {{result.response.transaction_details.installment_amount}}</p>
+
+
+
+{% endblock %}
 

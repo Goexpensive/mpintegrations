@@ -1,0 +1,212 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <title>MercadoEnvíos</title>
+    <link rel="stylesheet" href="">
+    <style type="text/css" media="screen">
+    .hide {
+        display: none !important;
+    }
+    </style>
+</head>
+
+<body>
+<p>{{result}}</p>	
+    <div id="shipping-cost-calculator">
+        <h2>Ingresa tu código postal</h2>
+        <h4>Asi podrás calcular el costo de envío y conocer los servicios disponibles</h4>
+        <div>
+            <p>
+                <label for="zip_code">Codigo Postal</label>
+                <input id="zip_code" name="zip_code" value="">
+                <input id="search" class="" type="button" value="Calcular">
+                <a href="#">No se mi codigo postal</a>
+            </p>
+        </div>
+        <div>
+            <table id="shipping-options" class="hide">
+                <thead>
+                    <tr>
+                        <th>Formas de envio</th>
+                        <th>Tiempo estimado</th>
+                        <th>Costo</th>
+                    </tr>
+                </thead>
+                <tbody id="shipping-options-container">
+                </tbody>
+            </table>
+        </div>
+    </div>
+    <script src="http://ajax.googleapis.com/ajax/libs/jquery/1.11.3/jquery.min.js"></script>
+    <script type="text/javascript">
+    var JSON = JSON || {};
+    if (!JSON.parse) {
+        (function() {
+            JSON.parse = function(obj) {
+                'use strict';
+                return eval("(" + obj + ")");
+            };
+        })();
+    }
+
+    function ajax(options) {
+
+        var req = window.XDomainRequest ? (new XDomainRequest()) : (new XMLHttpRequest()),
+            data;
+
+        req.open(options.method, options.url, true);
+
+        req.timeout = options.timeout || 1000;
+
+        if (window.XDomainRequest) {
+            req.onload = function() {
+                data = JSON.parse(req.responseText);
+                if (typeof options.success === "function") {
+                    options.success(options.method === 'POST' ? 201 : 200, data);
+                }
+            };
+            req.onerror = req.ontimeout = function() {
+                if (typeof options.error === "function") {
+                    options.error(400, {
+                        user_agent: window.navigator.userAgent,
+                        error: "bad_request",
+                        cause: []
+                    });
+                }
+            };
+            req.onprogress = function() {};
+        } else {
+            req.setRequestHeader('Accept', 'application/json');
+
+            if (options.contentType !== null) {
+                req.setRequestHeader('Content-Type', options.contentType);
+            } else {
+                req.setRequestHeader('Content-Type', 'application/json');
+            }
+
+            req.onreadystatechange = function() {
+                if (this.readyState === 4) {
+                    if (this.status >= 200 && this.status < 400) {
+                        // Success!
+                        data = JSON.parse(this.responseText);
+                        if (typeof options.success === "function") {
+                            options.success(this.status, data);
+                        }
+                    } else if (this.status >= 400) {
+                        data = JSON.parse(this.responseText);
+                        if (typeof options.error === "function") {
+                            options.error(this.status, data);
+                        }
+                    } else if (typeof options.error === "function") {
+                        options.error(503, {});
+                    }
+                }
+            };
+        }
+
+        if (options.method === 'GET' || options.data == null || options.data == undefined) {
+            req.send();
+        } else {
+            data = JSON.stringify(options.data);
+            req.send(data);
+        }
+    }
+    </script>
+    <script type="text/javascript">
+    var publicKey = "TEST-8119f218-c3b3-462e-b4d1-1bd05cd9946c",
+        dimensions = "30x30x30,500",
+        freeMethod = "182";
+
+    function updateShippingData(_dimensions, _freeMethod) {
+        dimensions = _dimensions;
+        freeMethod = _freeMethod;
+    }
+
+    function bauildShippingOptions(name, delivery, cost) {
+
+        return "<td>" + name + "</td><td>" + delivery + "</td><td><span class=''>" + cost + "</span></td>";
+
+    }
+
+    function queryShippingOptions(publicKey, zipCode, dimensions, freeMethod) {
+
+        var url = "https://api.mercadopago.com/v1/shipping_options?public_key=" + publicKey + "&zip_code=" + zipCode + "&dimensions=" + dimensions,
+            container = document.getElementById("shipping-options-container"),
+            parent = document.getElementById("shipping-options");
+
+        if (freeMethod && freeMethod != "" && freeMethod != "null") {
+
+            url += "&freeMethod=" + freeMethod;
+
+        }
+
+        parent.className = "hide";
+        container.innerHTML = "";
+
+        ajax({
+            method: "GET",
+            url: url,
+            timeout: 10000,
+            error: function(status, response) {
+                if (status === 404) {
+                    alert("Zip code invalido");
+                } else {
+                    alert("Ups..");
+                }
+            },
+            success: function(status, response) {
+
+                var options = (response && response.options ? response.options : []),
+                    option,
+                    shippingOption,
+                    days,
+                    container = document.getElementById("shipping-options-container"),
+                    parent = document.getElementById("shipping-options");
+
+                if (options && options.length > 0) {
+
+                    for (var i = options.length - 1; i >= 0; i--) {
+
+                        option = options[i];
+
+                        days = option.speed.shipping < 24 ? 1 : Math.ceil(option.speed.shipping / 24);
+
+                        shippingOption = bauildShippingOptions(option.name, days, option.cost);
+
+                        container.innerHTML += shippingOption;
+                    }
+                }
+
+                parent.className = "";
+
+            }
+        });
+    }
+
+    function addEventListener(id, event, callback) {
+
+        var el = document.getElementById(id);
+
+        if (el.addEventListener) {
+            el.addEventListener(event, callback, false);
+        } else if (el.attachEvent) {
+            el.attachEvent('on' + event, callback);
+        }
+    }
+
+    function initShippingOption() {
+
+        addEventListener("search", "click", function() {
+            var zipCode = document.getElementById("zip_code").value;
+            queryShippingOptions(publicKey, zipCode, dimensions, freeMethod);
+        });
+    }
+
+    initShippingOption();
+    </script>
+</body>
+
+</html>
