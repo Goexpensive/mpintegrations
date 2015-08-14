@@ -17,7 +17,7 @@
             {% csrf_token %}
             		<div class="input-group">
 				<span class="input-group-addon" id="basic-addon-transaction-amount">$</span>
-				<input id="email" class="form-control" name="transaction_amount" value="100"  aria-describedby="basic-addon-transaction-amount"/>
+				<input id="amount" class="form-control" name="transaction_amount" value="100"  aria-describedby="basic-addon-transaction-amount"/>
 			</div>
 			<br />
 			<div class="input-group">
@@ -53,9 +53,6 @@
 			<div class="input-group">
 				<select id="docType" class="form-control" data-checkout="docType" aria-describedby="basic-addon-docType"></select>
 				<span class="input-group-addon" id="basic-addon-docType">Document type</span>
-			</div>
-			<div class="input-group">
-				<input type="hidden" id="amount" name="amount" />
 			</div>
 			<br />
 			<div class="input-group">
@@ -96,6 +93,8 @@
             /* CONFIGURO LA PK DEL SELLER 1 */
             var public_key = "{{public_key}}";
             console.log(public_key);
+           
+        	
             Mercadopago.setPublishableKey(public_key);
 
             Mercadopago.getIdentificationTypes();
@@ -188,7 +187,7 @@
 			                */
 			            }
 			        }
-
+			        amount = parseFloat(document.querySelector('#amount').value);
 			        Mercadopago.getInstallments({
 			            "bin": bin,
 			            "amount": amount

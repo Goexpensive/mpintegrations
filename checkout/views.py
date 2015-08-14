@@ -14,7 +14,7 @@ class  CheckoutView(View):
 
 	def get(self,request, *args, **kwargs):
 
-			
+		print(os.environ['MP_PUBLIC_KEY'])		
 		return render(request, self.template_name, {'public_key': os.environ['MP_PUBLIC_KEY']})
 	
 	def post(self,request, *args, **kwargs):
@@ -24,7 +24,7 @@ class  CheckoutView(View):
 		print(self.request.POST)
 		mp = MP(os.environ['MP_SECRET_KEY'])
 		payment = mp.post("/v1/payments", {
-	        "transaction_amount": payment_data['transaction_amount'],
+	        "transaction_amount": float(payment_data['transaction_amount']),
 	        "token": payment_data['token'],
 	        "description": "Title of what you are paying for",
 	        "payer": {
@@ -37,7 +37,7 @@ class  CheckoutView(View):
 		print(payment)
 		message = "Created"
 		if payment['status']!=201:
-			message = payment['message']
+			message = payment['response']['message']
 		
 
 		return render(request,'payments.html', {'result':payment, 'message':message} )
