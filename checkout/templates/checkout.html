@@ -12,10 +12,14 @@
 <div class="row">
 	<div class="col-lg-8 border_cart">
 		<h2>Credit card form</h2> 
-        <p id="totalAPagar"> Payment total amount: $0 </p>   
 	<!-- FORMULARIO DE TC -->
 	    <form action="" method="post" id="pay" name="pay">
             {% csrf_token %}
+            		<div class="input-group">
+				<span class="input-group-addon" id="basic-addon-transaction-amount">$</span>
+				<input id="email" class="form-control" name="transaction_amount" value="100"  aria-describedby="basic-addon-transaction-amount"/>
+			</div>
+			<br />
 			<div class="input-group">
 				<span class="input-group-addon" id="basic-addon-email">@</span>
 				<input id="email" class="form-control" name="email" value="fabio.vaccaro+180232571@mercadolibre.com" type="email" placeholder="your email" aria-describedby="basic-addon-email"/>
