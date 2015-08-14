@@ -24,7 +24,7 @@ class  CheckoutView(View):
 		print(self.request.POST)
 		mp = MP(os.environ['MP_SECRET_KEY'])
 		payment = mp.post("/v1/payments", {
-	        "transaction_amount": 100,
+	        "transaction_amount": 1000,
 	        "token": payment_data['token'],
 	        "description": "Title of what you are paying for",
 	        "payer": {
@@ -32,7 +32,7 @@ class  CheckoutView(View):
 	        },
 	        "installments": int(payment_data['installments']),
 	        "payment_method_id": payment_data['paymentMethodId'],
-	       	"issuer_id": 338
+	       	#"issuer_id": 338
 	    });
 		print(payment)
 		#if payment['status']==201:
