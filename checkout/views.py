@@ -35,9 +35,10 @@ class  CheckoutView(View):
 	       	#"issuer_id": 338
 	    });
 		print(payment)
-		#if payment['status']==201:
-		#	payment = payment['response']
+		message = "Created"
+		if payment['status']!=201:
+			message = payment['message']
 		
 
-		return render(request,'payments.html', {'result':payment} )
+		return render(request,'payments.html', {'result':payment, 'message':message} )
 
