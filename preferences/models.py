@@ -42,6 +42,8 @@ class Preferences(models.Model):
 	mode = models.CharField(max_length=255, null=True,blank=True) 
 	local_pickup = models.NullBooleanField(blank=True)
 	free_methods = models.IntegerField(null= True, blank=True)
+	zip_code = models.CharField(max_length=255, null=True,blank=True)
+	default_shipping_method = models.IntegerField(null= True, blank=True)
 	json = models.TextField(null=True,blank=True) 
 
 	def __str__(self):

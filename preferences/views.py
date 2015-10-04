@@ -67,13 +67,19 @@ class PreferenceCreate(CreateView):
 				"category_id" : getattr(args,'category_id'),
 				"quantity" : 	getattr(args,'quantity'),
 				"unit_price" : 	getattr(args,'unit_price'),
-				"dimensions": 	getattr(args,'dimensions'),
 			}],
 			"shipments": {
 				"mode": getattr(args,'mode'),
 				"local_pickup": getattr(args,'local_pickup'),
-				#"dimensions": 	getattr(args,'dimensions'),
-				#"free_methods": [{"id": getattr(args,'free_methods'),}],
+				"dimensions": 	getattr(args,'dimensions'),
+				"free_methods": [{
+					"id": getattr(args,'free_methods'),
+				}],
+				"default_shipping_method": getattr(args,'default_shipping_method'),
+				 "receiver_address": {
+					"zip_code": getattr(args,'zip_code'),
+				}
+
 			},
 			"payer" : {
 				"name" : getattr(args,'name'),
@@ -120,7 +126,7 @@ class PreferenceCreate(CreateView):
 		mp = MP(os.environ['MP_CLIENT_ID'], os.environ['MP_CLIENT_SECRET'])
 
 		preferenceResult = mp.create_preference(preference_data)
-
+		print(preferenceResult)
 
 		setattr(args,'json',preferenceResult["response"])
 		sandbox_init_point = preferenceResult["response"]["sandbox_init_point"]
